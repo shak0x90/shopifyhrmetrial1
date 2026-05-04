@@ -935,3 +935,247 @@ h4, .h4 {
   flex: 0 0 auto;
   scroll-snap-align: start;
 }
+
+/* -----------------------------------------------------------
+   14. Accessibility
+   ----------------------------------------------------------- */
+
+/* Reduced motion — disable all animations and transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus visible — keyboard navigation outlines */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse/touch users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Specific focus styles for buttons and interactive elements */
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.swatch:focus-visible,
+.size-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.header__icon:focus-visible,
+.header__nav-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Fix swatch touch targets — minimum 44px per WCAG */
+.swatch {
+  width: 28px;
+  height: 28px;
+}
+
+.swatch-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+/* -----------------------------------------------------------
+   15. Wishlist & Cart Micro-Animations
+   ----------------------------------------------------------- */
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+@keyframes cartBump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.product-card__wishlist.is-active svg {
+  fill: var(--color-sale);
+  color: var(--color-sale);
+  animation: heartPulse 300ms ease-in-out;
+}
+
+.header__cart-count.is-bumping {
+  animation: cartBump 250ms ease-in-out;
+}
+
+/* ============================================================
+   Quick View Modal
+   ============================================================ */
+.quick-view {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-view--active {
+  display: flex;
+}
+
+.quick-view__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.quick-view__container {
+  position: relative;
+  z-index: 1;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  width: 90vw;
+  max-width: 960px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalFadeIn 300ms ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.quick-view__close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  transition: all var(--duration-fast);
+}
+
+.quick-view__close:hover {
+  background: var(--color-background);
+}
+
+.quick-view__body {
+  padding: var(--space-xl);
+}
+
+.quick-view__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+@media (max-width: 749px) {
+  .quick-view__container {
+    width: 100vw;
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    position: fixed;
+    bottom: 0;
+    animation: sheetSlideUp 300ms ease-out;
+  }
+
+  @keyframes sheetSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+}
+
+/* ============================================================
+   Mobile Filter Bottom Sheet
+   ============================================================ */
+@media (max-width: 1024px) {
+  #collection-filters {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    background: rgba(0, 0, 0, 0.5);
+    align-items: flex-end;
+  }
+
+  #collection-filters.filter-sheet--open {
+    display: flex;
+  }
+
+  #collection-filters::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80vh;
+    max-height: 80vh;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    z-index: 1;
+    animation: sheetSlideUp 300ms ease-out;
+    pointer-events: none;
+  }
+
+  #collection-filters > * {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    background: var(--color-surface);
+    padding: var(--space-xl) var(--space-lg);
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    animation: sheetSlideUp 300ms ease-out;
+  }
+}
+
+/* ============================================================
+   Cart Drawer — Mobile Bottom Sheet Enhancement
+   ============================================================ */
+@media (max-width: 749px) {
+  .drawer {
+    width: 100vw !important;
+    max-width: 100% !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 90vh;
+    position: fixed;
+    bottom: 0;
+    top: auto !important;
+    right: 0;
+  }
+
+  .drawer__body {
+    max-height: calc(90vh - 140px);
+    overflow-y: auto;
+  }
+}
+

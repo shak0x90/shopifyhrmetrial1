@@ -33,6 +33,64 @@
         "columns": "4"
       }
     },
+    "shop_the_look": {
+      "type": "shop-the-look",
+      "settings": {
+        "subheading": "Curated Style",
+        "heading": "Shop the Look"
+      },
+      "blocks": {
+        "h1": { "type": "product_pin", "settings": { "label": "Top", "position_x": 30, "position_y": 40 } },
+        "h2": { "type": "product_pin", "settings": { "label": "Bottom", "position_x": 60, "position_y": 55 } },
+        "h3": { "type": "product_pin", "settings": { "label": "Accessory", "position_x": 75, "position_y": 30 } }
+      },
+      "block_order": ["h1", "h2", "h3"]
+    },
+    "brand_story": {
+      "type": "brand-story",
+      "settings": {
+        "subheading": "Our Story",
+        "heading": "Timeless Design, Responsibly Made",
+        "text": "<p>We believe in creating pieces that transcend seasons. Each garment is thoughtfully designed with quality fabrics and meticulous attention to detail, because true style never goes out of fashion.</p>",
+        "button_text": "Learn More"
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "heading": "What Our Customers Say"
+      },
+      "blocks": {
+        "t1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "text": "The quality is incredible. I've never felt fabric this luxurious at this price point. My new favorite brand.",
+            "name": "Sarah M.",
+            "title": "Verified Buyer"
+          }
+        },
+        "t2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "text": "Finally a brand that understands modern minimalism. The fit is perfect and the attention to detail is remarkable.",
+            "name": "Emily R.",
+            "title": "Verified Buyer"
+          }
+        },
+        "t3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 4,
+            "text": "I've ordered three times now and every piece has exceeded my expectations. The customer service is equally impressive.",
+            "name": "Jessica K.",
+            "title": "Verified Buyer"
+          }
+        }
+      },
+      "block_order": ["t1", "t2", "t3"]
+    },
     "newsletter": {
       "type": "newsletter",
       "settings": {
@@ -46,6 +104,9 @@
     "hero",
     "featured_collections",
     "new_arrivals",
+    "shop_the_look",
+    "brand_story",
+    "testimonials",
     "newsletter"
   ]
 }

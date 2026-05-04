@@ -92,5 +92,27 @@
   {%- comment -%} ===== MOBILE BOTTOM NAV ===== {%- endcomment -%}
   {%- section 'mobile-bottom-nav' -%}
 
+  {%- comment -%} ===== QUICK VIEW MODAL ===== {%- endcomment -%}
+  <div class="quick-view" id="quick-view-modal" role="dialog" aria-modal="true" aria-label="Quick view">
+    <div class="quick-view__overlay"></div>
+    <div class="quick-view__container">
+      <button class="quick-view__close" data-quick-view-close aria-label="Close quick view">
+        {%- render 'icon', icon: 'close', size: 20 -%}
+      </button>
+      <div class="quick-view__body"></div>
+    </div>
+  </div>
+
+  {%- comment -%} Product JSON for recently viewed tracking {%- endcomment -%}
+  {%- if template.name == 'product' -%}
+    <script type="application/json" data-product-json>
+      {
+        "title": {{ product.title | json }},
+        "featured_image": {{ product.featured_image | image_url: width: 360 | json }},
+        "price_formatted": {{ product.price | money | json }}
+      }
+    </script>
+  {%- endif -%}
+
 </body>
 </html>

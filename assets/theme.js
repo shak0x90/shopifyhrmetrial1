@@ -135,6 +135,21 @@ document.addEventListener('alpine:init', () => {
       clearInterval(this.interval);
     }
   }));
+
+  // Recently Viewed — localStorage-backed product history
+  Alpine.data('recentlyViewed', () => ({
+    products: [],
+    maxItems: 8,
+
+    init() {
+      try {
+        const items = JSON.parse(localStorage.getItem('atelier_recently_viewed') || '[]');
+        // Filter out the current page product
+        const currentPath = window.location.pathname;
+        this.products = items.filter(p => p.url !== currentPath).slice(0, 4);
+      } catch { this.products = []; }
+    }
+  }));
 });
 
 /* ============================================================
@@ -209,3 +224,172 @@ document.querySelectorAll('[data-sort-select]').forEach(select => {
     window.location.href = url.toString();
   });
 });
+
+/* ============================================================
+   Recently Viewed — Track product views in localStorage
+   ============================================================ */
+(function trackRecentlyViewed() {
+  const el = document.querySelector('[data-product-json]');
+  if (!el) return;
+  try {
+    const product = JSON.parse(el.textContent);
+    const key = 'atelier_recently_viewed';
+    const max = 8;
+    let items = JSON.parse(localStorage.getItem(key) || '[]');
+
+    // Remove if already exists
+    items = items.filter(p => p.url !== window.location.pathname);
+
+    // Add to front
+    items.unshift({
+      title: product.title,
+      url: window.location.pathname,
+      image: product.featured_image ? product.featured_image.replace(/(\.\w+)$/, '_360x$1') : '',
+      price: product.price_formatted || ''
+    });
+
+    // Trim
+    items = items.slice(0, max);
+    localStorage.setItem(key, JSON.stringify(items));
+  } catch (err) {
+    console.warn('Recently viewed tracking error:', err);
+  }
+})();
+
+/* ============================================================
+   Quick View Modal — AJAX product fetch for collection pages
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('quick-view-modal');
+  if (!modal) return;
+
+  const overlay = modal.querySelector('.quick-view__overlay');
+  const body = modal.querySelector('.quick-view__body');
+  const closeBtn = modal.querySelector('[data-quick-view-close]');
+
+  function openQuickView(url) {
+    modal.classList.add('quick-view--active');
+    document.body.style.overflow = 'hidden';
+    body.innerHTML = '<div class="quick-view__loading"><span class="label">Loading...</span></div>';
+
+    fetch(url + '?sections=main-product')
+      .then(res => res.json())
+      .then(data => {
+        const html = new DOMParser().parseFromString(data['main-product'], 'text/html');
+        const productSection = html.querySelector('.product-detail');
+        if (productSection) {
+          body.innerHTML = productSection.outerHTML;
+        } else {
+          body.innerHTML = '<p class="text-center" style="padding: var(--space-2xl);">Unable to load product.</p>';
+        }
+      })
+      .catch(() => {
+        body.innerHTML = '<p class="text-center" style="padding: var(--space-2xl);">Unable to load product.</p>';
+      });
+  }
+
+  function closeQuickView() {
+    modal.classList.remove('quick-view--active');
+    document.body.style.overflow = '';
+    body.innerHTML = '';
+  }
+
+  // Event delegation for quick-view buttons
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-quick-view]');
+    if (trigger) {
+      e.preventDefault();
+      openQuickView(trigger.dataset.quickView || trigger.href);
+    }
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeQuickView);
+  if (overlay) overlay.addEventListener('click', closeQuickView);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('quick-view--active')) {
+      closeQuickView();
+    }
+  });
+});
+
+/* ============================================================
+   Mobile Filter Bottom Sheet
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  const filterToggle = document.querySelector('[data-filter-toggle]');
+  const filterPanel = document.getElementById('collection-filters');
+  if (!filterToggle || !filterPanel) return;
+
+  filterToggle.addEventListener('click', () => {
+    filterPanel.classList.toggle('filter-sheet--open');
+    document.body.style.overflow = filterPanel.classList.contains('filter-sheet--open') ? 'hidden' : '';
+  });
+
+  // Close on overlay click
+  filterPanel.addEventListener('click', (e) => {
+    if (e.target === filterPanel) {
+      filterPanel.classList.remove('filter-sheet--open');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+/* ============================================================
+   Wishlist Toggle — Heart pulse animation + localStorage
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  const wishlistKey = 'atelier_wishlist';
+
+  function getWishlist() {
+    try {
+      return JSON.parse(localStorage.getItem(wishlistKey) || '[]');
+    } catch { return []; }
+  }
+
+  function saveWishlist(list) {
+    localStorage.setItem(wishlistKey, JSON.stringify(list));
+  }
+
+  // Initialize wishlist button states
+  const wishlist = getWishlist();
+  document.querySelectorAll('[data-wishlist-toggle]').forEach(btn => {
+    const handle = btn.dataset.productHandle;
+    if (wishlist.includes(handle)) {
+      btn.classList.add('is-active');
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const current = getWishlist();
+      const idx = current.indexOf(handle);
+
+      if (idx > -1) {
+        current.splice(idx, 1);
+        btn.classList.remove('is-active');
+      } else {
+        current.push(handle);
+        btn.classList.add('is-active');
+      }
+
+      saveWishlist(current);
+
+      // Re-trigger pulse animation
+      btn.style.animation = 'none';
+      btn.offsetHeight; // force reflow
+      btn.style.animation = '';
+    });
+  });
+
+  // Cart count bump animation on add
+  document.addEventListener('cart:updated', () => {
+    document.querySelectorAll('[data-cart-count]').forEach(el => {
+      el.classList.add('is-bumping');
+      el.addEventListener('animationend', () => {
+        el.classList.remove('is-bumping');
+      }, { once: true });
+    });
+  });
+});
+
