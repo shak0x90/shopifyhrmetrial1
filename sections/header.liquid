@@ -1,0 +1,524 @@
+{%- comment -%}
+  Header — Sticky navigation with centered logo
+  Features: sticky scroll, mega-menu trigger, cart count badge, mobile hamburger
+{%- endcomment -%}
+
+<header
+  class="header"
+  id="site-header"
+  x-data="{ mobileMenuOpen: false, searchOpen: false }"
+  role="banner"
+>
+  <div class="header__inner container">
+    {%- comment -%} === LEFT: Mobile menu + Desktop Nav === {%- endcomment -%}
+    <div class="header__left">
+      {%- comment -%} Mobile hamburger {%- endcomment -%}
+      <button
+        class="header__menu-toggle hide-desktop"
+        @click="mobileMenuOpen = !mobileMenuOpen"
+        :aria-expanded="mobileMenuOpen"
+        aria-controls="mobile-menu"
+        aria-label="{{ 'accessibility.menu' | t }}"
+      >
+        {%- render 'icon', icon: 'menu', size: 22 -%}
+      </button>
+
+      {%- comment -%} Desktop navigation {%- endcomment -%}
+      <nav class="header__nav hide-mobile" role="navigation" aria-label="{{ 'accessibility.main_nav' | t }}">
+        <ul class="header__nav-list">
+          {%- for link in linklists[section.settings.menu].links -%}
+            <li class="header__nav-item{% if link.links.size > 0 %} has-dropdown{% endif %}">
+              <a
+                href="{{ link.url }}"
+                class="header__nav-link label"
+                {% if link.current %}aria-current="page"{% endif %}
+              >
+                {{ link.title }}
+              </a>
+
+              {%- comment -%} Mega menu dropdown {%- endcomment -%}
+              {%- if link.links.size > 0 -%}
+                <div class="mega-menu" id="mega-menu-{{ forloop.index }}">
+                  <div class="mega-menu__inner container">
+                    <div class="mega-menu__columns">
+                      {%- for child in link.links -%}
+                        <div class="mega-menu__column">
+                          <span class="mega-menu__heading label-sm">{{ child.title }}</span>
+                          {%- if child.links.size > 0 -%}
+                            <ul class="mega-menu__links">
+                              {%- for grandchild in child.links -%}
+                                <li>
+                                  <a href="{{ grandchild.url }}" class="mega-menu__link">
+                                    {{ grandchild.title }}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
+                        </div>
+                      {%- endfor -%}
+                    </div>
+
+                    {%- comment -%} Featured images in mega menu {%- endcomment -%}
+                    {%- if section.settings.mega_image_1 != blank -%}
+                      <div class="mega-menu__featured">
+                        <a href="{{ section.settings.mega_image_1_link }}" class="mega-menu__featured-item">
+                          <img
+                            src="{{ section.settings.mega_image_1 | image_url: width: 400 }}"
+                            alt="{{ section.settings.mega_image_1_text | escape }}"
+                            loading="lazy"
+                            width="400"
+                            height="500"
+                          >
+                          <span class="label-sm">{{ section.settings.mega_image_1_text }}</span>
+                        </a>
+                        {%- if section.settings.mega_image_2 != blank -%}
+                          <a href="{{ section.settings.mega_image_2_link }}" class="mega-menu__featured-item">
+                            <img
+                              src="{{ section.settings.mega_image_2 | image_url: width: 400 }}"
+                              alt="{{ section.settings.mega_image_2_text | escape }}"
+                              loading="lazy"
+                              width="400"
+                              height="500"
+                            >
+                            <span class="label-sm">{{ section.settings.mega_image_2_text }}</span>
+                          </a>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    </div>
+
+    {%- comment -%} === CENTER: Logo === {%- endcomment -%}
+    <div class="header__center">
+      <a href="{{ routes.root_url }}" class="header__logo" aria-label="{{ shop.name }}">
+        {%- if settings.logo != blank -%}
+          <img
+            src="{{ settings.logo | image_url: width: settings.logo_max_width | times: 2 }}"
+            alt="{{ shop.name }}"
+            width="{{ settings.logo_max_width }}"
+            height="{{ settings.logo_max_width | divided_by: settings.logo.aspect_ratio }}"
+            loading="eager"
+            style="max-width: {{ settings.logo_max_width }}px;"
+          >
+        {%- else -%}
+          <span class="header__logo-text h3">{{ settings.logo_text | default: shop.name }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+
+    {%- comment -%} === RIGHT: Utility icons === {%- endcomment -%}
+    <div class="header__right">
+      {%- comment -%} Search {%- endcomment -%}
+      <button
+        class="header__icon"
+        @click="searchOpen = !searchOpen"
+        aria-label="{{ 'accessibility.search' | t }}"
+      >
+        {%- render 'icon', icon: 'search', size: 20 -%}
+      </button>
+
+      {%- comment -%} Account {%- endcomment -%}
+      <a href="{{ routes.account_url | default: routes.account_login_url }}" class="header__icon hide-mobile" aria-label="{{ 'accessibility.account' | t }}">
+        {%- render 'icon', icon: 'user', size: 20 -%}
+      </a>
+
+      {%- comment -%} Wishlist {%- endcomment -%}
+      <a href="/pages/wishlist" class="header__icon hide-mobile" aria-label="{{ 'accessibility.wishlist' | t }}">
+        {%- render 'icon', icon: 'heart', size: 20 -%}
+      </a>
+
+      {%- comment -%} Cart {%- endcomment -%}
+      <button
+        class="header__icon header__cart-icon"
+        aria-label="{{ 'accessibility.cart' | t }} ({{ cart.item_count }})"
+        data-cart-toggle
+      >
+        {%- render 'icon', icon: 'cart', size: 20 -%}
+        {%- if cart.item_count > 0 -%}
+          <span class="header__cart-count" data-cart-count>{{ cart.item_count }}</span>
+        {%- endif -%}
+      </button>
+    </div>
+  </div>
+
+  {%- comment -%} === MOBILE MENU DRAWER === {%- endcomment -%}
+  <div
+    class="mobile-menu"
+    id="mobile-menu"
+    :class="{ 'mobile-menu--open': mobileMenuOpen }"
+    x-show="mobileMenuOpen"
+    x-transition
+    @keydown.escape.window="mobileMenuOpen = false"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'accessibility.menu' | t }}"
+  >
+    <div class="mobile-menu__header">
+      <span class="label">{{ 'general.menu' | t }}</span>
+      <button @click="mobileMenuOpen = false" aria-label="{{ 'accessibility.close' | t }}">
+        {%- render 'icon', icon: 'close', size: 20 -%}
+      </button>
+    </div>
+    <nav class="mobile-menu__nav">
+      <ul class="mobile-menu__list">
+        {%- for link in linklists[section.settings.menu].links -%}
+          <li class="mobile-menu__item" x-data="{ open: false }">
+            <div class="mobile-menu__link-row">
+              <a href="{{ link.url }}" class="mobile-menu__link">{{ link.title }}</a>
+              {%- if link.links.size > 0 -%}
+                <button @click="open = !open" class="mobile-menu__expand" aria-label="Expand {{ link.title }}">
+                  {%- render 'icon', icon: 'chevron-down', size: 16 -%}
+                </button>
+              {%- endif -%}
+            </div>
+            {%- if link.links.size > 0 -%}
+              <ul class="mobile-menu__sub" x-show="open" x-collapse>
+                {%- for child in link.links -%}
+                  <li><a href="{{ child.url }}" class="mobile-menu__sub-link">{{ child.title }}</a></li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  </div>
+
+  {%- comment -%} Mobile menu overlay {%- endcomment -%}
+  <div
+    class="overlay"
+    x-show="mobileMenuOpen"
+    @click="mobileMenuOpen = false"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+  ></div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+    transition: transform var(--duration-base) var(--ease-out),
+                background-color var(--duration-base);
+  }
+
+  .header--scrolled {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(250, 248, 245, 0.92);
+  }
+
+  .header--hidden {
+    transform: translateY(-100%);
+  }
+
+  .header__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: var(--header-height);
+    gap: var(--space-lg);
+  }
+
+  /* Left section */
+  .header__left {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Center logo */
+  .header__center {
+    display: flex;
+    justify-content: center;
+  }
+
+  .header__logo-text {
+    font-family: var(--font-heading);
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+  }
+
+  /* Right icons */
+  .header__right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-md);
+  }
+
+  .header__icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    transition: opacity var(--duration-fast);
+  }
+
+  .header__icon:hover {
+    opacity: 0.6;
+  }
+
+  .header__cart-count {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+    background-color: var(--color-text-primary);
+    color: var(--color-background);
+    border-radius: var(--radius-full);
+  }
+
+  /* Desktop navigation */
+  .header__nav-list {
+    display: flex;
+    gap: var(--space-xl);
+  }
+
+  .header__nav-item {
+    position: relative;
+  }
+
+  .header__nav-link {
+    position: relative;
+    padding: var(--space-sm) 0;
+    font-size: calc(13px * var(--font-body-scale));
+  }
+
+  .header__nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width var(--duration-base) var(--ease-out);
+  }
+
+  .header__nav-link:hover::after,
+  .header__nav-link[aria-current]::after {
+    width: 100%;
+  }
+
+  /* Mega menu */
+  .mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    background-color: var(--color-background);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-2xl) 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--duration-base) var(--ease-out);
+  }
+
+  .header__nav-item:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mega-menu__inner {
+    display: flex;
+    gap: var(--space-2xl);
+  }
+
+  .mega-menu__columns {
+    display: flex;
+    gap: var(--space-2xl);
+    flex: 1;
+  }
+
+  .mega-menu__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .mega-menu__heading {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .mega-menu__links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .mega-menu__link {
+    font-size: calc(14px * var(--font-body-scale));
+    transition: opacity var(--duration-fast);
+  }
+
+  .mega-menu__link:hover {
+    opacity: 0.6;
+  }
+
+  .mega-menu__featured {
+    display: flex;
+    gap: var(--space-lg);
+    flex-shrink: 0;
+  }
+
+  .mega-menu__featured-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    width: 200px;
+  }
+
+  .mega-menu__featured-item img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(360px, 85vw);
+    background: var(--color-background);
+    z-index: var(--z-drawer);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .mobile-menu--open {
+    transform: translateX(0);
+  }
+
+  .mobile-menu__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-menu__list {
+    padding: var(--space-md) 0;
+  }
+
+  .mobile-menu__item {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-menu__link-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .mobile-menu__link {
+    font-size: calc(15px * var(--font-body-scale));
+    font-weight: 500;
+  }
+
+  .mobile-menu__expand {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-menu__sub {
+    padding: 0 var(--space-lg) var(--space-md) var(--space-2xl);
+  }
+
+  .mobile-menu__sub-link {
+    display: block;
+    padding: var(--space-sm) 0;
+    font-size: calc(14px * var(--font-body-scale));
+    color: var(--color-text-secondary);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Sticky header",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Mega menu featured images"
+    },
+    {
+      "type": "image_picker",
+      "id": "mega_image_1",
+      "label": "Featured image 1"
+    },
+    {
+      "type": "text",
+      "id": "mega_image_1_text",
+      "label": "Image 1 label",
+      "default": "Shop New Arrivals"
+    },
+    {
+      "type": "url",
+      "id": "mega_image_1_link",
+      "label": "Image 1 link"
+    },
+    {
+      "type": "image_picker",
+      "id": "mega_image_2",
+      "label": "Featured image 2"
+    },
+    {
+      "type": "text",
+      "id": "mega_image_2_text",
+      "label": "Image 2 label",
+      "default": "Shop the Look"
+    },
+    {
+      "type": "url",
+      "id": "mega_image_2_link",
+      "label": "Image 2 link"
+    }
+  ]
+}
+{% endschema %}

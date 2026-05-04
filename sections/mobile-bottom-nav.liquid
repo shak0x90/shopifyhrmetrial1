@@ -1,0 +1,89 @@
+{%- comment -%}
+  Mobile Bottom Navigation — Fixed bottom bar (mobile only)
+{%- endcomment -%}
+
+{%- if section.settings.show_bottom_nav -%}
+<nav class="mobile-bottom-nav hide-desktop" id="mobile-bottom-nav" role="navigation" aria-label="{{ 'accessibility.bottom_nav' | t }}">
+  <a href="{{ routes.root_url }}" class="mobile-bottom-nav__item{% if template.name == 'index' %} mobile-bottom-nav__item--active{% endif %}">
+    {%- render 'icon', icon: 'home', size: 20 -%}
+    <span class="mobile-bottom-nav__label">{{ 'general.nav.home' | t }}</span>
+  </a>
+
+  <button class="mobile-bottom-nav__item" data-search-toggle aria-label="{{ 'accessibility.search' | t }}">
+    {%- render 'icon', icon: 'search', size: 20 -%}
+    <span class="mobile-bottom-nav__label">{{ 'general.nav.search' | t }}</span>
+  </button>
+
+  <a href="{{ routes.collections_url }}" class="mobile-bottom-nav__item{% if template.name == 'collection' or template.name == 'list-collections' %} mobile-bottom-nav__item--active{% endif %}">
+    {%- render 'icon', icon: 'grid', size: 20 -%}
+    <span class="mobile-bottom-nav__label">{{ 'general.nav.shop' | t }}</span>
+  </a>
+
+  <a href="/pages/wishlist" class="mobile-bottom-nav__item">
+    {%- render 'icon', icon: 'heart', size: 20 -%}
+    <span class="mobile-bottom-nav__label">{{ 'general.nav.wishlist' | t }}</span>
+  </a>
+
+  <a href="{{ routes.account_url | default: routes.account_login_url }}" class="mobile-bottom-nav__item{% if template.name contains 'account' or template.name contains 'login' %} mobile-bottom-nav__item--active{% endif %}">
+    {%- render 'icon', icon: 'user', size: 20 -%}
+    <span class="mobile-bottom-nav__label">{{ 'general.nav.account' | t }}</span>
+  </a>
+</nav>
+{%- endif -%}
+
+<style>
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 60px;
+    background-color: var(--color-background);
+    border-top: 1px solid var(--color-border);
+    padding: 0 var(--space-md);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-bottom-nav__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    flex: 1;
+    padding: var(--space-xs) 0;
+    color: var(--color-text-secondary);
+    transition: color var(--duration-fast);
+    min-height: 44px;
+  }
+
+  .mobile-bottom-nav__item--active {
+    color: var(--color-text-primary);
+  }
+
+  .mobile-bottom-nav__label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Mobile bottom nav",
+  "class": "mobile-bottom-nav-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_bottom_nav",
+      "label": "Show mobile bottom navigation",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

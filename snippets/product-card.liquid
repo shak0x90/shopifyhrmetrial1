@@ -1,0 +1,126 @@
+{%- comment -%}
+  Product card snippet — the core reusable product component.
+  Usage:  {% render 'product-card', product: product, show_vendor: false %}
+{%- endcomment -%}
+
+{%- liquid
+  assign show_vendor = show_vendor | default: false
+  assign show_swatches = show_swatches | default: true
+  assign show_quick_add = show_quick_add | default: true
+  assign lazy = lazy | default: true
+  assign img_loading = 'lazy'
+  if lazy == false
+    assign img_loading = 'eager'
+  endif
+-%}
+
+<article class="product-card" data-product-id="{{ product.id }}">
+  {%- comment -%} === IMAGE === {%- endcomment -%}
+  <div class="product-card__media">
+    <a href="{{ product.url }}" aria-label="{{ product.title | escape }}" tabindex="-1">
+      {%- if product.featured_image -%}
+        <img
+          class="product-card__img product-card__img--primary"
+          src="{{ product.featured_image | image_url: width: 720 }}"
+          srcset="{{ product.featured_image | image_url: width: 360 }} 360w,
+                  {{ product.featured_image | image_url: width: 540 }} 540w,
+                  {{ product.featured_image | image_url: width: 720 }} 720w,
+                  {{ product.featured_image | image_url: width: 900 }} 900w"
+          sizes="(min-width: 1024px) 25vw, 50vw"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          loading="{{ img_loading }}"
+          width="{{ product.featured_image.width }}"
+          height="{{ product.featured_image.height }}"
+        >
+      {%- else -%}
+        <div class="product-card__img skeleton aspect-3-4"></div>
+      {%- endif -%}
+
+      {%- comment -%} Second image on hover {%- endcomment -%}
+      {%- if product.images.size > 1 -%}
+        <img
+          class="product-card__img product-card__img--hover"
+          src="{{ product.images[1] | image_url: width: 720 }}"
+          srcset="{{ product.images[1] | image_url: width: 360 }} 360w,
+                  {{ product.images[1] | image_url: width: 720 }} 720w"
+          sizes="(min-width: 1024px) 25vw, 50vw"
+          alt="{{ product.images[1].alt | default: product.title | escape }}"
+          loading="lazy"
+          width="{{ product.images[1].width }}"
+          height="{{ product.images[1].height }}"
+        >
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} Badges {%- endcomment -%}
+    {%- if product.available == false -%}
+      <div class="product-card__soldout-overlay">
+        <span class="badge badge--soldout">{{ 'products.product.sold_out' | t }}</span>
+      </div>
+    {%- elsif product.compare_at_price > product.price -%}
+      {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+      <span class="product-card__badge badge badge--sale">-{{ discount }}%</span>
+    {%- endif -%}
+
+    {%- comment -%} Wishlist button {%- endcomment -%}
+    <button
+      class="product-card__wishlist"
+      aria-label="{{ 'products.product.add_to_wishlist' | t }}"
+      data-wishlist-toggle="{{ product.id }}"
+    >
+      {%- render 'icon', icon: 'heart', size: 18 -%}
+    </button>
+
+    {%- comment -%} Quick add {%- endcomment -%}
+    {%- if show_quick_add and product.available -%}
+      {%- if product.variants.size == 1 -%}
+        <form class="product-card__quickadd" action="{{ routes.cart_add_url }}" method="post">
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          <button type="submit" class="btn btn--primary btn--full btn--sm">
+            {{ 'products.product.quick_add' | t }}
+          </button>
+        </form>
+      {%- else -%}
+        <a href="{{ product.url }}" class="product-card__quickadd btn btn--primary btn--full btn--sm">
+          {{ 'products.product.choose_options' | t }}
+        </a>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} === INFO === {%- endcomment -%}
+  <div class="product-card__info">
+    {%- if show_vendor and product.vendor != blank -%}
+      <span class="product-card__vendor">{{ product.vendor }}</span>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <div class="product-card__price">
+      {%- render 'price', product: product -%}
+    </div>
+
+    {%- comment -%} Color swatches {%- endcomment -%}
+    {%- if show_swatches -%}
+      {%- assign color_option = product.options_by_name['Color'] -%}
+      {%- if color_option and color_option.values.size > 1 -%}
+        <div class="product-card__swatches">
+          {%- for value in color_option.values limit: 5 -%}
+            {%- assign color_handle = value | handleize -%}
+            <span
+              class="swatch"
+              style="background-color: {{ color_handle }};"
+              title="{{ value }}"
+              aria-label="{{ value }}"
+            ></span>
+          {%- endfor -%}
+          {%- if color_option.values.size > 5 -%}
+            <span class="text-meta">+{{ color_option.values.size | minus: 5 }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</article>

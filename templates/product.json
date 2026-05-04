@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {
+        "sticky_gallery": true,
+        "show_vendor": false
+      },
+      "blocks": {
+        "desc": { "type": "accordion", "settings": { "heading": "Description" } },
+        "size": { "type": "accordion", "settings": { "heading": "Size & Fit" } },
+        "material": { "type": "accordion", "settings": { "heading": "Material & Care" } },
+        "shipping": { "type": "accordion", "settings": { "heading": "Shipping & Returns" } }
+      },
+      "block_order": ["desc", "size", "material", "shipping"]
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,60 @@
+{%- comment -%}
+  Free Shipping Progress Bar
+  Usage:  {% render 'free-shipping-bar' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign threshold_cents = settings.free_shipping_threshold | default: '150' | times: 100
+  assign cart_total = cart.total_price
+  assign remaining = threshold_cents | minus: cart_total
+  assign progress = cart_total | times: 100 | divided_by: threshold_cents
+  if progress > 100
+    assign progress = 100
+  endif
+-%}
+
+<div class="free-shipping-bar" data-free-shipping-bar>
+  {%- if remaining <= 0 -%}
+    <p class="free-shipping-bar__text body-sm text-center" style="color: var(--color-success);">
+      {%- render 'icon', icon: 'truck', size: 16 -%}
+      {{ 'cart.free_shipping_achieved' | t }}
+    </p>
+  {%- else -%}
+    <p class="free-shipping-bar__text body-sm text-center">
+      {{ 'cart.free_shipping_remaining' | t: amount: remaining | money }}
+    </p>
+  {%- endif -%}
+  <div class="free-shipping-bar__track">
+    <div class="free-shipping-bar__fill" style="width: {{ progress }}%;"></div>
+  </div>
+</div>
+
+<style>
+  .free-shipping-bar {
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .free-shipping-bar__text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+  }
+
+  .free-shipping-bar__track {
+    width: 100%;
+    height: 3px;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .free-shipping-bar__fill {
+    height: 100%;
+    background: var(--color-success);
+    border-radius: var(--radius-full);
+    transition: width var(--duration-base) var(--ease-out);
+  }
+</style>

@@ -1,0 +1,233 @@
+{%- comment -%}
+  Cart Drawer — Slide-in from right
+  Features: line items, quantity controls, free shipping bar, upsell, trust badges
+{%- endcomment -%}
+
+<div
+  class="cart-drawer"
+  id="cart-drawer"
+  x-data="cartDrawer()"
+  x-show="open"
+  @keydown.escape.window="close()"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ 'cart.title' | t }}"
+>
+  {%- comment -%} Overlay {%- endcomment -%}
+  <div
+    class="overlay overlay--active"
+    @click="close()"
+    x-show="open"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+  ></div>
+
+  {%- comment -%} Drawer panel {%- endcomment -%}
+  <div
+    class="drawer"
+    :class="{ 'drawer--open': open }"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="translate-x-full"
+  >
+    {%- comment -%} Header {%- endcomment -%}
+    <div class="drawer__header">
+      <h2 class="label">{{ 'cart.title' | t }} ({{ cart.item_count }})</h2>
+      <button @click="close()" aria-label="{{ 'accessibility.close' | t }}">
+        {%- render 'icon', icon: 'close', size: 20 -%}
+      </button>
+    </div>
+
+    {%- comment -%} Free shipping bar {%- endcomment -%}
+    {%- if settings.free_shipping_enabled -%}
+      {%- render 'free-shipping-bar' -%}
+    {%- endif -%}
+
+    {%- comment -%} Body — line items {%- endcomment -%}
+    <div class="drawer__body" id="cart-drawer-items">
+      {%- if cart.item_count > 0 -%}
+        {%- for item in cart.items -%}
+          <div class="cart-item" data-line="{{ forloop.index }}">
+            <a href="{{ item.url }}" class="cart-item__img-link">
+              {%- if item.image -%}
+                <img
+                  class="cart-item__img"
+                  src="{{ item.image | image_url: width: 200 }}"
+                  alt="{{ item.title | escape }}"
+                  width="80"
+                  height="107"
+                  loading="lazy"
+                >
+              {%- endif -%}
+            </a>
+            <div class="cart-item__info">
+              <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title }}</a>
+              <p class="cart-item__variant text-meta">{{ item.variant.title }}</p>
+
+              <div class="cart-item__bottom">
+                <div class="cart-item__quantity" x-data="{ qty: {{ item.quantity }} }">
+                  <button
+                    class="cart-item__qty-btn"
+                    @click="qty = Math.max(0, qty - 1); updateItem({{ forloop.index }}, qty)"
+                    aria-label="{{ 'cart.decrease' | t }}"
+                  >
+                    {%- render 'icon', icon: 'minus', size: 14 -%}
+                  </button>
+                  <span class="cart-item__qty-value" x-text="qty">{{ item.quantity }}</span>
+                  <button
+                    class="cart-item__qty-btn"
+                    @click="qty++; updateItem({{ forloop.index }}, qty)"
+                    aria-label="{{ 'cart.increase' | t }}"
+                  >
+                    {%- render 'icon', icon: 'plus', size: 14 -%}
+                  </button>
+                </div>
+
+                <span class="cart-item__price price">{{ item.final_line_price | money }}</span>
+              </div>
+            </div>
+
+            <button
+              class="cart-item__remove"
+              @click="updateItem({{ forloop.index }}, 0)"
+              aria-label="{{ 'cart.remove' | t }}"
+            >
+              {%- render 'icon', icon: 'trash', size: 16 -%}
+            </button>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        <div class="cart-empty text-center" style="padding: var(--space-3xl) 0;">
+          <p class="h3" style="margin-bottom: var(--space-md);">{{ 'cart.empty_title' | t }}</p>
+          <p class="text-meta" style="margin-bottom: var(--space-xl);">{{ 'cart.empty_description' | t }}</p>
+          <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary" @click="close()">
+            {{ 'cart.continue_shopping' | t }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Footer — checkout {%- endcomment -%}
+    {%- if cart.item_count > 0 -%}
+      <div class="drawer__footer">
+        {%- comment -%} Trust badges {%- endcomment -%}
+        <div class="cart-trust flex gap-lg justify-center" style="margin-bottom: var(--space-lg);">
+          <span class="cart-trust__item flex items-center gap-xs text-meta">
+            {%- render 'icon', icon: 'lock', size: 14 -%} {{ 'cart.secure_checkout' | t }}
+          </span>
+          <span class="cart-trust__item flex items-center gap-xs text-meta">
+            {%- render 'icon', icon: 'return', size: 14 -%} {{ 'cart.free_returns' | t }}
+          </span>
+        </div>
+
+        <a href="{{ routes.cart_url }}" class="btn btn--primary btn--full btn--lg">
+          {{ 'cart.checkout' | t }} — {{ cart.total_price | money }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .cart-item {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+  }
+
+  .cart-item__img {
+    width: 80px;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+
+  .cart-item__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 0;
+  }
+
+  .cart-item__title {
+    font-size: calc(14px * var(--font-body-scale));
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .cart-item__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .cart-item__quantity {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .cart-item__qty-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+  }
+
+  .cart-item__qty-value {
+    width: 32px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cart-item__price {
+    font-size: calc(14px * var(--font-body-scale));
+  }
+
+  .cart-item__remove {
+    position: absolute;
+    top: var(--space-md);
+    right: 0;
+    opacity: 0.4;
+    transition: opacity var(--duration-fast);
+  }
+
+  .cart-item__remove:hover {
+    opacity: 1;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "class": "cart-drawer-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_upsell",
+      "label": "Show upsell products",
+      "default": true
+    },
+    {
+      "type": "collection",
+      "id": "upsell_collection",
+      "label": "Upsell collection"
+    }
+  ]
+}
+{% endschema %}

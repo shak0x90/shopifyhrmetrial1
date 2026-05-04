@@ -1,0 +1,44 @@
+{%- comment -%}
+  Responsive image snippet with srcset and lazy loading.
+  Usage:  {% render 'image', image: product.featured_image, sizes: '(min-width: 1024px) 25vw, 50vw' %}
+  Params: image — Shopify image object
+          sizes — responsive sizes attribute
+          aspect_ratio — e.g. '3/4', default auto
+          loading — 'lazy' or 'eager', default 'lazy'
+          fetchpriority — 'high' for LCP images
+          class — additional CSS class
+          alt — alt text override
+{%- endcomment -%}
+
+{%- liquid
+  assign img_loading = loading | default: 'lazy'
+  assign img_sizes = sizes | default: '100vw'
+  assign img_alt = alt | default: image.alt | escape
+  assign img_class = class | default: ''
+  assign widths = '180,360,540,720,900,1080,1296,1512,1728,1944,2160,2376,2592,2808,3024'
+-%}
+
+{%- if image != blank -%}
+  <img
+    src="{{ image | image_url: width: 1080 }}"
+    srcset="{%- for w in widths -%}
+      {%- assign width = w | strip -%}
+      {%- if image.width >= width -%}
+        {{ image | image_url: width: width }} {{ width }}w{%- unless forloop.last -%},{%- endunless -%}
+      {%- endif -%}
+    {%- endfor -%}"
+    sizes="{{ img_sizes }}"
+    alt="{{ img_alt }}"
+    loading="{{ img_loading }}"
+    {%- if fetchpriority -%} fetchpriority="{{ fetchpriority }}"{%- endif -%}
+    {%- if aspect_ratio -%} style="aspect-ratio: {{ aspect_ratio }};"{%- endif -%}
+    class="{{ img_class }}"
+    width="{{ image.width }}"
+    height="{{ image.height }}"
+  >
+{%- else -%}
+  {%- comment -%} Placeholder when no image {%- endcomment -%}
+  <div class="placeholder-image {{ img_class }}" {% if aspect_ratio %}style="aspect-ratio: {{ aspect_ratio }};"{% endif %}>
+    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+  </div>
+{%- endif -%}

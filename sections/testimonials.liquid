@@ -1,0 +1,134 @@
+{%- comment -%}
+  Testimonials — Customer reviews in grid or carousel
+{%- endcomment -%}
+
+<section class="section testimonials" id="testimonials-{{ section.id }}">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="h2 text-center" style="margin-bottom: var(--space-2xl);">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="grid grid--3">
+      {%- for block in section.blocks -%}
+        <div class="testimonial-card" {{ block.shopify_attributes }}>
+          {%- comment -%} Stars {%- endcomment -%}
+          <div class="testimonial-card__stars flex gap-xs" style="margin-bottom: var(--space-md);">
+            {%- assign rating = block.settings.rating | default: 5 -%}
+            {%- for i in (1..5) -%}
+              {%- if i <= rating -%}
+                {%- render 'icon', icon: 'star', size: 14 -%}
+              {%- else -%}
+                {%- render 'icon', icon: 'star-empty', size: 14 -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          {%- comment -%} Quote {%- endcomment -%}
+          <blockquote class="testimonial-card__quote" style="margin-bottom: var(--space-lg);">
+            <p style="font-style: italic; line-height: 1.7;">{{ block.settings.text }}</p>
+          </blockquote>
+
+          {%- comment -%} Author {%- endcomment -%}
+          <div class="testimonial-card__author flex items-center gap-md">
+            {%- if block.settings.photo != blank -%}
+              <img
+                class="testimonial-card__photo"
+                src="{{ block.settings.photo | image_url: width: 80 }}"
+                alt="{{ block.settings.name | escape }}"
+                width="40"
+                height="40"
+                loading="lazy"
+              >
+            {%- endif -%}
+            <div>
+              <p class="testimonial-card__name" style="font-weight: 500;">{{ block.settings.name }}</p>
+              {%- if block.settings.title != blank -%}
+                <p class="text-meta">{{ block.settings.title }}</p>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .testimonial-card {
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .testimonial-card__photo {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "class": "testimonials-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Customers Say"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Quote",
+          "default": "The quality is incredible. I've never felt fabric this luxurious at this price point. My new favorite brand."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer name",
+          "default": "Sarah M."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title / location",
+          "default": "Verified Buyer"
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" }
+      ]
+    }
+  ]
+}
+{% endschema %}

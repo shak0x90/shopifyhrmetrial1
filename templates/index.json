@@ -1,0 +1,59 @@
+{
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "show_announcement": true,
+        "text": "Free Shipping Over $150 — Shop New Arrivals"
+      }
+    },
+    "hero": {
+      "type": "hero-banner",
+      "settings": {
+        "heading": "THE NEW COLLECTION",
+        "subheading": "Spring / Summer 2026",
+        "description": "Discover timeless pieces crafted for the modern wardrobe",
+        "button_text": "SHOP NOW",
+        "text_align": "center",
+        "overlay_opacity": 25
+      }
+    },
+    "featured_collections": {
+      "type": "featured-collections",
+      "settings": {
+        "heading": "Shop by Category",
+        "columns": "4"
+      },
+      "blocks": {
+        "col_1": { "type": "collection", "settings": { "title": "Dresses" } },
+        "col_2": { "type": "collection", "settings": { "title": "Tops" } },
+        "col_3": { "type": "collection", "settings": { "title": "Outerwear" } },
+        "col_4": { "type": "collection", "settings": { "title": "Sale" } }
+      },
+      "block_order": ["col_1", "col_2", "col_3", "col_4"]
+    },
+    "new_arrivals": {
+      "type": "new-arrivals",
+      "settings": {
+        "heading": "Just In",
+        "product_count": 8,
+        "columns": "4"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Join the List",
+        "description": "Be the first to know about new arrivals, exclusive events, and insider-only promotions.",
+        "button_text": "Subscribe"
+      }
+    }
+  },
+  "order": [
+    "announcement",
+    "hero",
+    "featured_collections",
+    "new_arrivals",
+    "newsletter"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "general": {
+    "view_all": "View All",
+    "menu": "Menu",
+    "breadcrumbs": {
+      "home": "Home"
+    },
+    "newsletter": {
+      "email_placeholder": "Enter your email"
+    },
+    "footer": {
+      "rights": "All rights reserved"
+    },
+    "nav": {
+      "home": "Home",
+      "search": "Search",
+      "shop": "Shop",
+      "wishlist": "Wishlist",
+      "account": "Account"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to Cart",
+      "sold_out": "Sold Out",
+      "quick_add": "Quick Add",
+      "choose_options": "Choose Options",
+      "add_to_wishlist": "Add to Wishlist",
+      "reviews": "reviews",
+      "from": "From",
+      "low_stock": "Only {{ count }} left in this size",
+      "you_may_like": "You May Also Like",
+      "free_shipping": "Free Shipping",
+      "free_returns": "Free Returns",
+      "secure": "Secure Checkout"
+    }
+  },
+  "collections": {
+    "filter": "Filter",
+    "products_count": "products",
+    "sort_by": "Sort by",
+    "no_products": "No products found. Try adjusting your filters.",
+    "load_more": "Load More",
+    "clear_all": "Clear All",
+    "filter_min": "Min",
+    "filter_max": "Max"
+  },
+  "cart": {
+    "title": "Shopping Bag",
+    "empty_title": "Your bag is empty",
+    "empty_description": "Looks like you haven't added anything yet.",
+    "continue_shopping": "Continue Shopping",
+    "checkout": "Checkout",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "remove": "Remove item",
+    "free_shipping_achieved": "You've qualified for free shipping!",
+    "free_shipping_remaining": "Add {{ amount }} more for free shipping",
+    "secure_checkout": "Secure Checkout",
+    "free_returns": "Free Returns"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "menu": "Menu",
+    "search": "Search",
+    "account": "Account",
+    "wishlist": "Wishlist",
+    "cart": "Cart",
+    "close": "Close",
+    "main_nav": "Main navigation",
+    "bottom_nav": "Bottom navigation"
+  },
+  "sections": {
+    "announcement": {
+      "label": "Announcement"
+    }
+  }
+}
