@@ -1,0 +1,33 @@
+{%- comment -%} Customer Login {%- endcomment -%}
+
+<section class="section main-login" id="main-login">
+  <div class="container container--narrow text-center" style="max-width: 480px;">
+    <h1 class="h1" style="margin-bottom: var(--space-2xl);">Sign In</h1>
+
+    {%- form 'customer_login' -%}
+      {%- if form.errors -%}
+        <p class="form-error" style="color: var(--color-sale); margin-bottom: var(--space-md);">{{ form.errors | default_errors }}</p>
+      {%- endif -%}
+
+      <div style="display: flex; flex-direction: column; gap: var(--space-md); text-align: left;">
+        <div>
+          <label class="form-label" for="customer-email">Email</label>
+          <input class="input" type="email" id="customer-email" name="customer[email]" autocomplete="email" required>
+        </div>
+        <div>
+          <label class="form-label" for="customer-password">Password</label>
+          <input class="input" type="password" id="customer-password" name="customer[password]" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">Sign In</button>
+      </div>
+
+      <p class="body-sm" style="margin-top: var(--space-lg); color: var(--color-text-secondary);">
+        <a href="#recover">Forgot your password?</a> · <a href="{{ routes.account_register_url }}">Create an account</a>
+      </p>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Customer login", "settings": [] }
+{% endschema %}

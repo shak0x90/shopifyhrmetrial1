@@ -3,6 +3,9 @@
    Premium Fashion Shopify Theme
    ============================================================ */
 
+/* Alpine.js cloak — hide elements until Alpine initializes */
+[x-cloak] { display: none !important; }
+
 /* -----------------------------------------------------------
    0. CSS Reset (Modern Minimal)
    ----------------------------------------------------------- */

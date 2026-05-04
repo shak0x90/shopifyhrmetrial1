@@ -1,0 +1,45 @@
+{%- comment -%} Main Search — Search results page {%- endcomment -%}
+
+<section class="section main-search" id="main-search">
+  <div class="container">
+    <h1 class="h1 text-center" style="margin-bottom: var(--space-md);">
+      {%- if search.performed -%}
+        Search results for "{{ search.terms }}"
+      {%- else -%}
+        Search
+      {%- endif -%}
+    </h1>
+
+    <form action="{{ routes.search_url }}" method="get" class="flex gap-sm justify-center" style="max-width: 480px; margin: 0 auto var(--space-2xl);">
+      <input class="input" type="search" name="q" value="{{ search.terms | escape }}" placeholder="Search products..." style="flex: 1;">
+      <button type="submit" class="btn btn--primary">Search</button>
+    </form>
+
+    {%- if search.performed -%}
+      {%- if search.results_count > 0 -%}
+        <p class="text-meta text-center" style="margin-bottom: var(--space-xl);">{{ search.results_count }} results</p>
+        <div class="grid grid--4">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              {%- render 'product-card', product: item -%}
+            {%- else -%}
+              <a href="{{ item.url }}" class="search-result" style="padding: var(--space-lg); border: 1px solid var(--color-border);">
+                <h3 class="h4">{{ item.title }}</h3>
+                <p class="body-sm" style="color: var(--color-text-secondary); margin-top: var(--space-sm);">{{ item.content | strip_html | truncatewords: 20 }}</p>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="text-center" style="padding: var(--space-3xl) 0;">
+          <p class="h3" style="margin-bottom: var(--space-md);">No results found</p>
+          <p class="text-meta">Try a different search term or browse our collections.</p>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Search results", "settings": [] }
+{% endschema %}

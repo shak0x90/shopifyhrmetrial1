@@ -33,7 +33,7 @@
                 width="{{ block.settings.image.width }}"
                 height="{{ block.settings.image.height }}"
               >
-            {%- elsif collection.image -%}
+            {%- elsif collection != blank and collection.image -%}
               <img
                 class="collection-card__img"
                 src="{{ collection.image | image_url: width: 720 }}"

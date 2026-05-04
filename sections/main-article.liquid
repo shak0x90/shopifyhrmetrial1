@@ -1,0 +1,39 @@
+{%- comment -%} Main Article — Blog article {%- endcomment -%}
+
+<section class="section main-article" id="article-{{ article.id }}">
+  <div class="container container--narrow">
+    <div class="text-center" style="margin-bottom: var(--space-2xl);">
+      <time class="text-meta" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%B %d, %Y' }}</time>
+      <h1 class="h1" style="margin-top: var(--space-sm);">{{ article.title }}</h1>
+      {%- if article.author -%}
+        <p class="body-sm" style="color: var(--color-text-secondary); margin-top: var(--space-sm);">By {{ article.author }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if article.image -%}
+      <div style="margin-bottom: var(--space-2xl);">
+        <img src="{{ article.image | image_url: width: 1200 }}" alt="{{ article.title | escape }}" width="{{ article.image.width }}" height="{{ article.image.height }}" loading="eager" style="width: 100%; border-radius: var(--radius);">
+      </div>
+    {%- endif -%}
+
+    <div class="rte">
+      {{ article.content }}
+    </div>
+
+    {%- if blog.comments_enabled? -%}
+      <div style="margin-top: var(--space-3xl); padding-top: var(--space-2xl); border-top: 1px solid var(--color-border);">
+        <h2 class="h3" style="margin-bottom: var(--space-xl);">Comments ({{ article.comments_count }})</h2>
+        {%- for comment in article.comments -%}
+          <div class="comment" style="margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border);">
+            <p class="body-sm" style="font-weight: 500;">{{ comment.author }}</p>
+            <p class="body-sm" style="color: var(--color-text-secondary);">{{ comment.content }}</p>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Blog post", "settings": [] }
+{% endschema %}

@@ -1,0 +1,28 @@
+{%- comment -%} Customer Order {%- endcomment -%}
+
+<section class="section main-order" id="main-order">
+  <div class="container container--narrow">
+    <h1 class="h1" style="margin-bottom: var(--space-2xl);">{{ order.name }}</h1>
+    <p class="text-meta" style="margin-bottom: var(--space-xl);">Placed on {{ order.created_at | date: '%B %d, %Y' }}</p>
+
+    {%- for line_item in order.line_items -%}
+      <div class="cart-item" style="padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border); display: flex; gap: var(--space-md);">
+        {%- if line_item.image -%}
+          <img src="{{ line_item.image | image_url: width: 160 }}" alt="{{ line_item.title | escape }}" width="80" height="107" loading="lazy" style="aspect-ratio: 3/4; object-fit: cover;">
+        {%- endif -%}
+        <div>
+          <p style="font-weight: 500;">{{ line_item.title }}</p>
+          <p class="text-meta">Qty: {{ line_item.quantity }} · {{ line_item.final_line_price | money }}</p>
+        </div>
+      </div>
+    {%- endfor -%}
+
+    <div style="margin-top: var(--space-xl); text-align: right;">
+      <p class="h3">Total: {{ order.total_price | money }}</p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{ "name": "Customer order", "settings": [] }
+{% endschema %}

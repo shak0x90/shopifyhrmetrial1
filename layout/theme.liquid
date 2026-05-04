@@ -41,6 +41,9 @@
   {%- comment -%} Shopify required {%- endcomment -%}
   {{ content_for_header }}
 
+  {%- comment -%} Theme JS — must load BEFORE Alpine so Alpine.data() registrations are ready {%- endcomment -%}
+  <script src="{{ 'theme.js' | asset_url }}" defer></script>
+
   {%- comment -%} Alpine.js — lightweight reactivity for drawers, accordions, menus {%- endcomment -%}
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -89,7 +92,5 @@
   {%- comment -%} ===== MOBILE BOTTOM NAV ===== {%- endcomment -%}
   {%- section 'mobile-bottom-nav' -%}
 
-  {%- comment -%} ===== DEFERRED JS ===== {%- endcomment -%}
-  <script src="{{ 'theme.js' | asset_url }}" type="module" defer></script>
 </body>
 </html>
